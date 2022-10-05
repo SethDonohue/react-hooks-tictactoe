@@ -13,12 +13,15 @@ const Board = () => {
 	const [squares, setSquares] = useState(Array(9).fill(null));
 	const [isXNext, setIsXNext] = useState(true);
 	const [isGameEnd, setIsGameEnd] = useState(false);
+	const [winner, setWinner] = useState();
 
 	useEffect(() => {
 		if (!squares.find((el) => el !== null)) {
 			document.title = `TicTacToe`;
 		} else {
-			document.title = `TicTacToe: It's ${isXNext ? "X's" : "O's"} turn!`;
+			document.title = `TicTacToe: ${
+				isGameEnd ? "Game Over!" : isXNext ? "X's turn!" : "O's turn!"
+			}`;
 		}
 		checkGameEnd();
 	});
@@ -43,8 +46,12 @@ const Board = () => {
 		};
 
 		const getValues = (valOne, valTwo, valThree) => {
-			return [squares[valOne], squares[valTwo], squares[valThree]];
+			return [squares[valOne], squares[valTwo], squares[valThree]].reduce(
+				accumulator
+			);
 		};
+
+		const winningValues = ["XXX", "OOO"];
 
 		const topSquares = getValues(0, 1, 2);
 		const middleHorizontalSquares = getValues(3, 4, 5);
@@ -54,15 +61,37 @@ const Board = () => {
 		const middleVerticalSquares = getValues(1, 4, 7);
 		const rightSquares = getValues(2, 5, 8);
 
-		console.log(topSquares, middleHorizontalSquares, bottomSquares);
-		console.log(leftSquares, middleVerticalSquares, rightSquares);
-		switch (topSquares) {
-			case squares[0] === squares[1]:
-				break;
+		const diagonalLeftSquares = getValues(0, 4, 8);
+		const diagonalRightSquares = getValues(2, 4, 6);
 
-			default:
-				break;
-		}
+		const allSquaresValues = [
+			topSquares,
+			middleHorizontalSquares,
+			bottomSquares,
+			leftSquares,
+			middleVerticalSquares,
+			rightSquares,
+			diagonalLeftSquares,
+			diagonalRightSquares,
+		];
+
+		allSquaresValues.forEach((value) => {
+			if (winningValues.includes(value)) {
+				if (value === "XXX") {
+					setWinner("X");
+				} else {
+					setWinner("O");
+				}
+				setIsGameEnd(true);
+			}
+		});
+		// switch (topSquares) {
+		// 	case squares[0] === squares[1]:
+		// 		break;
+
+		// 	default:
+		// 		break;
+		// }
 		// horizontal checks
 		// if 1,2,3, or 4,5,6, or 6,7,8
 		// vertical checks
@@ -93,7 +122,7 @@ const Board = () => {
 	}
 
 	const status = isGameEnd
-		? "Game Over!"
+		? `Game Over! Player ${winner} wins!`
 		: isXNext
 		? " Next Player: X"
 		: "Next Player: O";
