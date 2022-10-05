@@ -36,3 +36,50 @@
     transform: rotate(360deg);
   }
 }
+
+.container{
+  margin: 10px;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.board {
+  display: grid;
+  grid-template-rows: repeat(3, 30px);
+  grid-template-columns: auto;
+  align-items: center;
+  margin: 10px;
+}
+
+.status {
+  margin-bottom: 10px;
+}
+
+.square {
+  border: 2px black solid;
+  background: none;
+  width: 30px;
+  height: 30px;
+  line-height: 20px;
+}
+
+.top {
+  border-top: none;
+}
+
+.left {
+  border-left: none;
+}
+
+.bottom {
+  border-bottom: none;
+}
+
+.right {
+  border-right: none;
+}
+
+.board-row {
+  display: flex;
+  align-items: center;
+
+}

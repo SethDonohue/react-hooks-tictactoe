@@ -1,25 +1,128 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import "./App.css";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+function Square({ value, onClick, className }) {
+	return (
+		<button onClick={onClick} className={`square ${className}`}>
+			{value}
+		</button>
+	);
 }
 
-export default App;
+const Board = () => {
+	const [squares, setSquares] = useState(Array(9).fill(null));
+	const [isXNext, setIsXNext] = useState(true);
+	const [isGameEnd, setIsGameEnd] = useState(false);
+
+	useEffect(() => {
+		if (!squares.find((el) => el !== null)) {
+			document.title = `TicTacToe`;
+		} else {
+			document.title = `TicTacToe: It's ${isXNext ? "X's" : "O's"} turn!`;
+		}
+		checkGameEnd();
+	});
+
+	const handleRestart = () => {
+		setSquares(Array(9).fill(null));
+		setIsGameEnd(false);
+	};
+
+	const checkGameEnd = () => {
+		if (!squares.includes(null)) {
+			setIsGameEnd(true);
+		}
+		checkGameWin();
+	};
+
+	const checkGameWin = () => {
+		const accumulator = (previousValue, currentValue) => {
+			if (previousValue && currentValue) {
+				return previousValue + currentValue;
+			}
+		};
+
+		const getValues = (valOne, valTwo, valThree) => {
+			return [squares[valOne], squares[valTwo], squares[valThree]];
+		};
+
+		const topSquares = getValues(0, 1, 2);
+		const middleHorizontalSquares = getValues(3, 4, 5);
+		const bottomSquares = getValues(6, 7, 8);
+
+		const leftSquares = getValues(0, 3, 6);
+		const middleVerticalSquares = getValues(1, 4, 7);
+		const rightSquares = getValues(2, 5, 8);
+
+		console.log(topSquares, middleHorizontalSquares, bottomSquares);
+		console.log(leftSquares, middleVerticalSquares, rightSquares);
+		switch (topSquares) {
+			case squares[0] === squares[1]:
+				break;
+
+			default:
+				break;
+		}
+		// horizontal checks
+		// if 1,2,3, or 4,5,6, or 6,7,8
+		// vertical checks
+		// if 1,4,7 or 2,5,8, or 3,6,9
+		// diagonal checks
+		// if 1,5,9, or 3,5,7
+	};
+
+	function renderSquare(i, className = "") {
+		const handleSquareClick = () => {
+			if (isGameEnd) {
+				return;
+			}
+			const nextSquares = squares.slice();
+			if (nextSquares[i] === null) {
+				nextSquares[i] = isXNext ? "X" : "O";
+				setIsXNext(!isXNext);
+				setSquares(nextSquares);
+			}
+		};
+		return (
+			<Square
+				value={squares[i]}
+				className={className}
+				onClick={handleSquareClick}
+			/>
+		);
+	}
+
+	const status = isGameEnd
+		? "Game Over!"
+		: isXNext
+		? " Next Player: X"
+		: "Next Player: O";
+
+	return (
+		<div className="container">
+			<div className="status">{status}</div>
+			<div className="board">
+				<div className="board-row">
+					{renderSquare(0, "top left")}
+					{renderSquare(1, "top ")}
+					{renderSquare(2, "top right")}
+				</div>
+				<div className="board-row">
+					{renderSquare(3, "left")}
+					{renderSquare(4)}
+					{renderSquare(5, "right")}
+				</div>
+				<div className="board-row">
+					{renderSquare(6, "bottom left")}
+					{renderSquare(7, "bottom")}
+					{renderSquare(8, "bottom right")}
+				</div>
+			</div>
+			<button onClick={handleRestart} className="restart">
+				Restart
+			</button>
+		</div>
+	);
+};
+
+export default Board;
