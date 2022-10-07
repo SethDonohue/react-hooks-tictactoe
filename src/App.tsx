@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 
-function Square({ value, onClick, className }) {
+export interface SquareProps {
+	value: string;
+	className: string;
+	onClick: () => void;
+}
+
+function Square({ value, className, onClick }: SquareProps) {
 	return (
 		<button onClick={onClick} className={`square ${className}`}>
 			{value}
@@ -13,7 +19,7 @@ const Board = () => {
 	const [squares, setSquares] = useState(Array(9).fill(null));
 	const [isXNext, setIsXNext] = useState(true);
 	const [isGameEnd, setIsGameEnd] = useState(false);
-	const [winner, setWinner] = useState();
+	const [winner, setWinner] = useState<string>();
 
 	useEffect(() => {
 		if (!squares.find((el) => el !== null)) {
@@ -34,19 +40,23 @@ const Board = () => {
 	const checkGameEnd = () => {
 		if (!squares.includes(null)) {
 			setIsGameEnd(true);
+			checkGameWin();
 		}
-		checkGameWin();
 	};
 
 	const checkGameWin = () => {
-		const accumulator = (previousValue, currentValue) => {
+		const accumulator = (previousValue: string, currentValue: string) => {
 			if (previousValue && currentValue) {
 				return previousValue + currentValue;
 			}
 		};
 
-		const getValues = (valOne, valTwo, valThree) => {
-			return [squares[valOne], squares[valTwo], squares[valThree]].reduce(
+		const getValues = (
+			indexOne: number,
+			indexTwo: number,
+			indexThree: number
+		) => {
+			return [squares[indexOne], squares[indexTwo], squares[indexThree]].reduce(
 				accumulator
 			);
 		};
@@ -79,7 +89,7 @@ const Board = () => {
 			if (winningValues.includes(value)) {
 				if (value === "XXX") {
 					setWinner("X");
-				} else {
+				} else if (value === "OOO") {
 					setWinner("O");
 				}
 				setIsGameEnd(true);
@@ -100,7 +110,7 @@ const Board = () => {
 		// if 1,5,9, or 3,5,7
 	};
 
-	function renderSquare(i, className = "") {
+	function renderSquare(i: number, className: string = "") {
 		const handleSquareClick = () => {
 			if (isGameEnd) {
 				return;
@@ -122,7 +132,7 @@ const Board = () => {
 	}
 
 	const status = isGameEnd
-		? `Game Over! Player ${winner} wins!`
+		? `Game Over! ${winner ? `Player ${winner} wins!` : "No one wins!"}`
 		: isXNext
 		? " Next Player: X"
 		: "Next Player: O";
